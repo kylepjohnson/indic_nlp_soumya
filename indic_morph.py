@@ -63,13 +63,15 @@ class UnsupervisedMorphAnalyzer(MorphAnalyzerI):
     def __init__(self,add_marker=False):
         self.add_marker=add_marker
 
-    def indian_punctuation_tokenize_regex(input_str):
+    def indian_punctuation_tokenize_regex(self, input_str):
         tok_str = indian_punctuation_pattern.sub(r' \1 ', input_str.replace('\t', ' '))
         return re.sub(r'[ ]+', u' ', tok_str).strip(' ').split(' ')
 
     def _morfessor_model(self, word, lang):
+        print ("**")
         io = morfessor.MorfessorIO()
         morfessor_model=io.read_any_model(INDIC_RESOURCES_PATH+'/morph/morfessor/{}.model'.format(lang))
+        print ("*")
         return morfessor_model.viterbi_segment(word)
 
     def _script_check_re(self, word, lang):
@@ -120,7 +122,7 @@ class UnsupervisedMorphAnalyzer(MorphAnalyzerI):
 
         @param tokens: string sequence of words 
 
-        @return seuqence of morphemes 
+        @return sequence of morphemes
         """
         tokens = UnsupervisedMorphAnalyzer.indian_punctuation_tokenize_regex(word)
         out_tokens=[]
@@ -144,11 +146,21 @@ if __name__ == '__main__':
     add_marker=False
 
     language = LANGUAGE_NAME_TO_CODE[language]
+    #print (language, type(language))
     analyzer = UnsupervisedMorphAnalyzer(add_marker)
+    input_str = "शास्त्रीयभाषा"
 
-    analyzed_word = analyzer.morph_analyze("प्रेमचन्द", language)
+    #f = 'hi'
+    #print (type(f))
+    analyzed_word = analyzer.morph_analyze(input_str, language)
     print(analyzed_word)
-
-    input_string = "प्रेमचन्द का जन्म ३१ जुलाई सन् १८८० को बनारस शहर।"
-    analyzed_string = analyzer.morph_analyze_document(input_string, language)
-    print(analyzed_string)
+    #inp = "231"
+    #checks = analyzer._morfessor_model(input_str, 'hi')
+    #(input_str, 'hi')
+    #tokens = analyzer.indian_punctuation_tokenize_regex(input_str)
+    #print (checks)
+    #print (checks[1])
+    #print (checks.count(1))
+    #input_string = "प्रेमचन्द का जन्म ३१ जुलाई सन् १८८० को बनारस शहर।"
+    #analyzed_string = analyzer.morph_analyze_document(input_string, language)
+    #print(analyzed_string)
